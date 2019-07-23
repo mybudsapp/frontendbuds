@@ -230,18 +230,17 @@ const Home = () => (
         <Grid.Row>
           <Grid.Column width={8}>
             <Header as='h3' style={{ fontSize: '2em' }}>
-              We Help Companies and Companions
+              An Application For Beginners and New Comers
             </Header>
             <p style={{ fontSize: '1.33em' }}>
-              We can give your company superpowers to do things that they never thought possible.
-              Let us delight your customers and empower your needs... through pure data analytics.
+              We all need a helping hand or guidance when starting something new and experimental.
+              Why not be guided by your friends or people that have been where you have been?
             </p>
             <Header as='h3' style={{ fontSize: '2em' }}>
-              We Make Bananas That Can Dance
+              We Strive to Make Things Clear
             </Header>
             <p style={{ fontSize: '1.33em' }}>
-              Yes that's right, you thought it was the stuff of dreams, but even bananas can be
-              bioengineered.
+              //some lorem epsum about my buds here 
             </p>
           </Grid.Column>
           <Grid.Column floated='right' width={6}>

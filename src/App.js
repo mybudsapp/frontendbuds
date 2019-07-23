@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import formData from "form-data";
 import axios from "axios";
 import ErrorBoundary from "./Components/ErrorBoundary";
+import PhotoForm from "./Components/PhotoForm"
 import StrainForm from "./Components/StrainForm"
 import { Route, Link, Switch, withRouter } from "react-router-dom";
 import "./App.css";
@@ -12,7 +13,7 @@ import UserStrainContainer from "./Components/UserStrainContainer";
 import Profile from "./Components/Profile.js";
 import EditProfile from "./Components/EditProfile.js";
 import { useAlert } from "react-alert";
-import {Card, Segment, Menu, Sidebar} from "semantic-ui-react"
+import {Card, Segment, Menu, Sidebar, Icon} from "semantic-ui-react"
 import Error from "./Components/Error";
 
 class App extends Component {
@@ -55,7 +56,7 @@ class App extends Component {
   };
 
   componentDidUpdate(nextState, prevProps) {
-    if (nextState.user == true && this.state.errors === false) {
+    if (nextState.user === true && this.state.errors === false) {
       this.props.histroy.push("/dashboard");
     }
     console.log("in the component will update", this.state);
@@ -157,8 +158,23 @@ class App extends Component {
   };
 
 
-  photoSubmitHandler = () => {
-      
+  submitPhotoHandler = (userInfo, token) => {
+
+      const fd = new formData();
+
+      let user_id = this.state.user.id
+
+
+      fd.append('image', userInfo.image);
+      fd.append('description', userInfo.description);
+
+
+      axios.patch(`http://localhost:3000/api/v1/gallery/${user_id}`, fd, {
+          headers: { "Content-Type": "application/x-www-form-urlencoded",
+          'Authorization': token}
+      }).then(res => res.json())
+
+
   }
   //---------------------------------------------------------------------------------------
 
@@ -231,6 +247,8 @@ class App extends Component {
     const { hasError } = this.state;
 
     const { errors } = this.state;
+
+    const { history } = this.props
 
     console.log("within the state", this.state);
 
@@ -305,11 +323,37 @@ class App extends Component {
           <Route path="/strains/new" render={() => <UserStrainContainer />} />
           <Route path="/" component={Error} />
         </Switch>
-        {this.state.displayStrainReviewForm?
-                <Card>
-                    <StrainForm/>
-                </Card>
-            : null}
+        {this.state.displayPhotoForm?<Card><PhotoForm submitPhotoHandler={this.submitPhotoHandler}/></Card>: null}
+        {this.state.displayStrainReviewForm? <Card><StrainForm/></Card> : null}
+
+
+        <Sidebar
+          as={Menu}
+          id='mobile-navbar'
+          animation='overlay'
+          inverted
+          direction='bottom'
+          onHide={this.handleSidebarHide}
+          horizontal
+         
+        >
+          <Menu.Item as='a'>
+              <Icon name='cog' />
+          </Menu.Item>
+              <Menu.Item as={ Link } name='profile' to='/profile/'>
+                  <Icon name='user'/>
+              </Menu.Item>
+              <Menu.Item as='a' onClick={(e) => this.handlePlusClick()} onDoubleClick={(e) => this.handleDoublePlusClick()}>
+                  <Icon name='plus square' size='large'/>
+              </Menu.Item>
+              <Menu.Item as='a'>
+                  <Icon name='search'/>
+              </Menu.Item>
+            <Menu.Item as='a'>
+                <Icon name='street view'>
+                </Icon>
+            </Menu.Item>
+        </Sidebar>
       </React.Fragment>
     );
   }

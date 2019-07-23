@@ -57,3 +57,43 @@ background-color: #ddd;
 background-color: #666;
 color: white;
 }
+
+@media screen and (max-width: 600px) {
+
+  #mobile-navbar {
+      visibility: visible;
+      position: fixed;
+      bottom: 0;
+    overflow: hidden;
+    background-color: #333;
+  }
+}
+
+
+/* Navbar links */
+#mobile-navbar a {
+
+  float: right;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px;
+  text-decoration: none;
+}
+
+/* Page content */
+.content {
+  padding: 16px;
+}
+
+/* The sticky class is added to the navbar with JS when it reaches its scroll position */
+.sticky {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+/* Add some top padding to the page content to prevent sudden quick movement (as the navigation bar gets a new position at the top of the page (position:fixed and top:0) */
+.sticky + .content {
+  padding-bottom:  60px;
+}

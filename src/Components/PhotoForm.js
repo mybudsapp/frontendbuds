@@ -1,51 +1,50 @@
 import React, {Component} from 'react'
 import {Card,Form, Label, Button} from 'semantic-ui-react'
 import PropTypes from 'prop-types'
+import {useAlert} from 'react-alert'
 
 class PhotoForm extends Component {
 
 state = {
-    newPhoto:{
-        image:'',
-        description:''
-    }
 }
 
 
 changeHandler = (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    e.target.files?
-    this.setState({ newPhoto:{
-        image: e.target.files[0]
-    }
-},  () => { [e.target.placeholder]: e.target.value })
-     : this.setState({ Photo: {
-    ...this.state.Photo,
-    [e.target.placeholder]: e.target.value
-}}, () => {
-console.log('from else if',this.state)
-})
-
+    this.setState({
+        [e.target.placeholder]: e.target.value
+    })
+    console.log('fromchangehandler', this.state)
 }
 
 
-theSubmitHandler = (e) => {
+handleImage = (e) => {
+    e.preventDefault();
+
+
+    this.setState({
+        image: e.target.files[0]
+    })
+
+    console.log("the handle image has been hit", this.state)
+
+}
+
+theSubmitPhotoHandler = (e) => {
 
     e.preventDefault()
 
     let token = localStorage.getItem('token')
-    let photo_id = this.props.Photo.id
 
 
     console.log("the state once submit handler is hit", this.state)
-    this.props.submitHandler(this.state, token, Photo_id);
+    this.props.submitPhotoHandler(this.state, token);
     this.setState({
-        newPhoto :{
             image:'',
             description:''
         }
-    });
+    )
 };
 
 
@@ -55,13 +54,13 @@ render() {
 
     return(
         <div class="ui form" encType="multipart/form-data">
-             <form onSubmit={this.theSubmitHandler}>
+             <form onSubmit={this.theSubmitPhotoHandler}>
              <label>Photo</label>
                <input
+                 encType="multipart/form-data"
                  type='file'
                  placeholder="photo"
-                 value={this.state.newPhoto.image}
-                 onChange={this.changeHandler}
+                 onChange={(e) => this.handleImage(e)}
                />
            <label>Caption</label>
                <input

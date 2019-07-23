@@ -4,9 +4,12 @@ import {Card, Grid, Image, Container, Segment} from 'semantic-ui-react'
 
 
 
-export const Gallery = () => (
+export class Gallery extends React.Component {
 
-    <Segment>
+render(){
+
+return(
+<Segment>
         <Grid container columns={4}>
     <Grid.Column>
       <Image src='https://react.semantic-ui.com/images/wireframe/image.png' size='small' />
@@ -26,6 +29,8 @@ export const Gallery = () => (
 
 
 )
+}
+}
 
 export const Friends = () => (
   <Card fluid>

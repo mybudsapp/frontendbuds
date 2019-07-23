@@ -245,7 +245,8 @@ class MobileContainer extends Component {
             .then(resp => resp.json())
             .then(userData => {
                 this.setState({
-                    user: {...userData.user}
+                    user: {...userData.user},
+                    avatar: userData.user.avatar
                 })
             }) : console.log("fuck my life")
 
@@ -332,6 +333,7 @@ class MobileContainer extends Component {
 
           <Menu.Item as={Link} to='/dashboard'>
               {this.state.user.username}
+              {this.state.user.avatar? <Image src={this.state.avatar.url} name={this.state.user.username} size='mini'/> : <Avatar size='mini'/>}
           </Menu.Item>
 
           </Segment>
