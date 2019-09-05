@@ -1,6 +1,7 @@
 import React from 'react'
 import {Card,Form, Label, Button} from 'semantic-ui-react'
 
+
 const Search = (props) => {
   return (
     <div>

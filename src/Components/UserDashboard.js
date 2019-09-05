@@ -20,7 +20,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import {Route, Link, Switch, withRouter} from 'react-router-dom'
 import Avatar from 'react-avatar'
-import {BasicFriendsFeed, FriendsPhotosFeed, FriendsStrainFeed, RecentActivityFeed} from "./ActivityFeeds"
+import {BasicFriendsFeed, FriendsPhotosFeed, FriendsStrainFeed, RecentActivityFeed, AllUsersFeed} from "./ActivityFeeds"
 
 
 const getWidth = () => {

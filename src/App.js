@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import formData from "form-data";
 import axios from "axios";
-import ErrorBoundary from "./Components/ErrorBoundary";
 import PhotoForm from "./Components/PhotoForm"
 import StrainForm from "./Components/StrainForm"
 import { Route, Link, Switch, withRouter } from "react-router-dom";
 import "./App.css";
 import GuestContainerLayout from "./GuestsContainer/GuestContainer";
+import ExploreContainer from "./Components/ExploreContainer"
 import Home from "./Components/Home";
 import UserDashboard from "./Components/UserDashboard.js";
 import UserStrainContainer from "./Components/UserStrainContainer";
@@ -26,7 +26,8 @@ class App extends Component {
     token: "",
     displayStrainReviewForm: false,
     displayPhotoForm: false,
-    displayPostForm: false
+    displayPostForm: false,
+    otherUser: {}
   };
 
   //----------------------Life Cycle Methods should go here--------------------//
@@ -174,7 +175,6 @@ class App extends Component {
           'Authorization': token}
       }).then(res => res.json())
 
-
   }
   //---------------------------------------------------------------------------------------
 
@@ -241,6 +241,18 @@ class App extends Component {
     });
   };
 
+
+  handleViewUserProfile = (e) => {
+
+      fetch(`http://localhost:3000/api/v1/users/${e.target.id}`).then(res => res.json()).then(userData =>
+        this.setState({
+            otherUser: {...userData.user}}))
+
+            this.props.history.push("/explore/" + String(this.state.otherUser.username))
+
+
+  }
+
   //---------------------------------------------------------------------------------------
 
   render() {
@@ -281,6 +293,7 @@ class App extends Component {
                       user={this.state.user}
                       avatar={this.state.avatar}
                       history={this.props.history}
+                      handleViewUserProfile={this.handleViewUserProfile}
                       handleNewPostClick={this.handleNewPostClick}
                       handleNewPhotoClick={this.handleNewPhotoClick}
                       handleNewStrainReviewClick={
@@ -318,7 +331,38 @@ class App extends Component {
               />
             )}
           />
+          {this.state.otherUser ? (
+            <Route
+              path="/explore/:username"
+              exact={true}
+              render={props => {
+                if (this.state.otherUser) {
+                  return (
+                    <Profile
+
+                      user={this.state.otherUser}
+                      avatar={this.state.otherUser.avatar}
+                      history={this.props.history}
+                      handleViewUserProfile={this.handleViewUserProfile}
+                      handleNewPostClick={this.handleNewPostClick}
+                      handleNewPhotoClick={this.handleNewPhotoClick}
+                      handleNewStrainReviewClick={
+                        this.handleNewStrainReviewClick
+                      }
+                    />
+                  );
+                } else {
+                  return <GuestContainerLayout />;
+                }
+              }}
+            />
+          ) : null}
           <Route path="/home" render={() => <Home user={this.state.user} />} />
+          <Route path="/explore" render={() =>
+              <ExploreContainer
+              user={this.state.user}
+              avatar={this.state.avatar}
+              handleViewUserProfile={this.handleViewUserProfile}/> } />
           <Route path="/strains" render={() => <GuestContainerLayout />} />
           <Route path="/strains/new" render={() => <UserStrainContainer />} />
           <Route path="/" component={Error} />
@@ -335,7 +379,7 @@ class App extends Component {
           direction='bottom'
           onHide={this.handleSidebarHide}
           horizontal
-         
+
         >
           <Menu.Item as='a'>
               <Icon name='cog' />
@@ -353,6 +397,7 @@ class App extends Component {
                 <Icon name='street view'>
                 </Icon>
             </Menu.Item>
+
         </Sidebar>
       </React.Fragment>
     );
