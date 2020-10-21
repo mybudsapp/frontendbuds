@@ -35,9 +35,8 @@ const UserCard = (props) => {
       </Card.Content>
       <Card.Content extra>
         <div className='ui two buttons'>
-            //should only show friend request if they are not currently friends or pending request
-          <Button basic color='green'>
-            Friend Request
+          <Button basic color='green' onClick={(e) => props.handleViewUserProfile(e)} id={props.user.id}>
+            View Profile
           </Button>
         </div>
       </Card.Content>

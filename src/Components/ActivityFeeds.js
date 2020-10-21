@@ -9,21 +9,23 @@ import {
   Card,
   Grid,
   Dropdown,
-  Menu
+  Menu,
+  Button
 } from 'semantic-ui-react'
 import UserCard from './UserCard'
-import Search from './Search'
+import StrainCard from './StrainCard'
+import Buds from '../mybuds-v2.png'
+
+import Filter from './Search'
 
 class AllUsersFeed extends React.Component {
 
     state = {
         users:[],
-        searchByName: '',
-        filterBy: {
+        advancedFilter: false,
+            searchByName: '',
             ageGroup: '',
-            personality_type: '',
-            location: ''
-        }
+            personality_type: ''
     }
 
     componentDidMount = () => {
@@ -60,29 +62,42 @@ class AllUsersFeed extends React.Component {
     });
   };
 
+  handleLocationSubmit = locationInfo => {
+      let location = {...locationInfo}
 
+      this.setState({
+        location: location
+      })
+  }
+
+  handleAdvancedFilter = () => {
+      this.setState({
+          advancedFilter: !this.state.advancedFilter
+      })
+  }
+
+  displayFiltersSelected = () => {
+      //should count how many keys have a true value within the state
+  }
 
   //needs to exclude the user that is doing the searching
-   searchedByNameUsers = () => {
-   let users = [];
 
-   if (this.state.searchByName === "") {
-     users = this.state.users;
-   } else {
-     users = this.state.users.filter(user =>
-       user.username.toLowerCase().includes(this.state.searchByName.toLowerCase())
-     );
-   }
-   //if any other filter option is chosen, filter each user here
-   //filter by age
-   //filter by personality_type
-   return users.map(user => {
-     return <Grid.Column width={3}><UserCard user={user} id={user.id} handleClick={this.handleClick} handleViewUserProfile={this.props.handleViewUserProfile}/></Grid.Column>;
-   });
- };
-
+  searchedByNameUsers = () => {
+      let users = [];
+      if (this.state.searchByName === "") {
+          users = this.state.users;
+      } else {
+          users = this.state.users.filter(user =>
+              user.username.toLowerCase().includes(this.state.searchByName.toLowerCase())
+          );
+      }
+      return users.map(user => {
+          return <Grid.Column width={3}><UserCard user={user} id={user.id} handleClick={this.handleClick} handleViewUserProfile={this.props.handleViewUserProfile}/></Grid.Column>;
+          });
+      };
 
     render(){
+
 
         // const filteredUsers = this.state.users.filter(rapper => rapper.name.includes(this.state.searchByName))
         //
@@ -100,87 +115,11 @@ class AllUsersFeed extends React.Component {
             <Grid divided='vertically'>
             <Grid.Row>
   <Icon name="at" size="big" position="left"/>
-  <div class="ui input"><input type="text" placeholder="Search" onChange={this.handleSearch} searchTerm={this.state.searchTerm} /></div>
-  <Menu fluid>
-      <Dropdown item text='Personality Type' position='left'>
-        <Dropdown.Menu>
-          <Dropdown.Item>Sativa</Dropdown.Item>
-          <Dropdown.Item>Hybrid</Dropdown.Item>
-          <Dropdown.Item>Indica</Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
-      <Dropdown item text='Age Group' position='left'>
-        <Dropdown.Menu>
-          <Dropdown.Item>20's - 30's</Dropdown.Item>
-          <Dropdown.Item>30's - 40's</Dropdown.Item>
-          <Dropdown.Item>50's - 60's</Dropdown.Item>
-           <Dropdown.Item>Mature</Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
-      <Dropdown item text='Location' position='left'>
-        <Dropdown.Menu >
-          <Dropdown.Item>City:<input type="text" placeholder="Search" onChange={this.handleSearch} searchTerm={this.state.searchTerm} onClick={e => e.stopPropagation()} /></Dropdown.Item>
-          <Dropdown.Item>
-          <select class="ui fluid dropdown" onClick={e => e.stopPropagation()}>
-     <option value="AL">Alabama</option>
-     <option value="AK">Alaska</option>
-     <option value="AZ">Arizona</option>
-     <option value="AR">Arkansas</option>
-     <option value="CA">California</option>
-     <option value="CO">Colorado</option>
-     <option value="CT">Connecticut</option>
-     <option value="DE">Delaware</option>
-     <option value="DC">District Of Columbia</option>
-     <option value="FL">Florida</option>
-     <option value="GA">Georgia</option>
-     <option value="HI">Hawaii</option>
-     <option value="ID">Idaho</option>
-     <option value="IL">Illinois</option>
-     <option value="IN">Indiana</option>
-     <option value="IA">Iowa</option>
-     <option value="KS">Kansas</option>
-     <option value="KY">Kentucky</option>
-     <option value="LA">Louisiana</option>
-     <option value="ME">Maine</option>
-     <option value="MD">Maryland</option>
-     <option value="MA">Massachusetts</option>
-     <option value="MI">Michigan</option>
-     <option value="MN">Minnesota</option>
-     <option value="MS">Mississippi</option>
-     <option value="MO">Missouri</option>
-     <option value="MT">Montana</option>
-     <option value="NE">Nebraska</option>
-     <option value="NV">Nevada</option>
-     <option value="NH">New Hampshire</option>
-     <option value="NJ">New Jersey</option>
-     <option value="NM">New Mexico</option>
-     <option value="NY">New York</option>
-     <option value="NC">North Carolina</option>
-     <option value="ND">North Dakota</option>
-     <option value="OH">Ohio</option>
-     <option value="OK">Oklahoma</option>
-     <option value="OR">Oregon</option>
-     <option value="PA">Pennsylvania</option>
-     <option value="RI">Rhode Island</option>
-     <option value="SC">South Carolina</option>
-     <option value="SD">South Dakota</option>
-     <option value="TN">Tennessee</option>
-     <option value="TX">Texas</option>
-     <option value="UT">Utah</option>
-     <option value="VT">Vermont</option>
-     <option value="VA">Virginia</option>
-     <option value="WA">Washington</option>
-     <option value="WV">West Virginia</option>
-     <option value="WI">Wisconsin</option>
-     <option value="WY">Wyoming</option>
-       </select>
-           </Dropdown.Item>
-
-        </Dropdown.Menu>
-      </Dropdown>
-    </Menu>
+  <div class="ui input"><input type="text" placeholder="Search" onChange={this.handleSearch} /></div>
+  {this.state.advancedFilter? <Filter handleAdvancedFilter={this.handleAdvancedFilter} handleLocationSubmit={this.handleLocationSubmit}/> : <button class="ui button" type="checkbox" onClick={this.handleAdvancedFilter}>Advanced Filter</button>}
             </Grid.Row>
             <Grid.Row columns={4}>
+                {console.log(this.state)}
             {this.searchedByNameUsers()}
             </Grid.Row>
             </Grid>
@@ -197,40 +136,136 @@ class AllUsersFeed extends React.Component {
 
 class AllStrainsFeed extends React.Component {
 
-    state = {
-        strains:[]
-    }
 
-    componentDidMount = () => {
-        let token = localStorage.token
+        state = {
+            strains:[],
+            advancedFilter: false,
+                searchByName: '',
+                ageGroup: '',
+                personality_type: ''
+        }
 
-        fetch("http://localhost:3000/api/v1/strains", {
-          method: "GET",
-          headers: {
-            Authorization: `${token}`,
-            "content-type": "application/json",
-            accepts: "application/json"
-          }
-        })
-          .then(resp => resp.json())
-          .then(strainsData => {
-            this.setState({
-              strains: { ...strainsData.strain }
-          });
-          console.log(strainsData)
+        componentDidMount = () => {
+
+            fetch("http://localhost:3000/api/v1/strains", {
+              method: "GET",
+              headers: {
+                "content-type": "application/json",
+                accepts: "application/json"
+              }
+            })
+              .then(resp => resp.json())
+              .then(strainsData => {
+                this.setState({
+                  strains: strainsData
+              });
+              console.log(strainsData)
+              })
+        }
+
+
+        handleClick = (e) => {
+            //this should send person to profile of the user they pressed on
+            console.log("in the handle click", e.target.name)
+
+            this.props.history.push("/strain/" + e.target.name)
+        }
+
+        handleSearch = e => {
+        this.setState({
+          searchByName: e.target.value
+        });
+      };
+
+      handleLocationSubmit = locationInfo => {
+          let location = {...locationInfo}
+
+          this.setState({
+            location: location
           })
+      }
+
+      handleAdvancedFilter = () => {
+          this.setState({
+              advancedFilter: !this.state.advancedFilter
+          })
+      }
+
+      displayFiltersSelected = () => {
+          //should count how many keys have a true value within the state
+      }
+
+      //needs to exclude the user that is doing the searching
+
+      searchedByNameStrains = () => {
+          let strains = [];
+
+          if (this.state.searchByName === "") {
+              strains = this.state.strains
+          } else {
+              strains = this.state.strains.filter(strain =>
+                  strain.strain_name.toLowerCase().includes(this.state.searchByName.toLowerCase())
+              );
+          }
+
+          return strains.map(strain => {
+              return <StrainCard user={this.props.user}strain={strain} handleViewStrainProfile={this.props.handleViewStrainProfile} id={strain.id}/>
+              });
+          };
+
+
+
+
+          // searchedByAdvanced = () => {
+          //     let strains = [];
+          //
+          //     if (this.state.searchByName === "") {
+          //         strains = this.state.strains
+          //     } else {
+          //         strains = this.state.strains.filter(strain =>
+          //             strain.strain_name.toLowerCase().includes(this.state.searchByName.toLowerCase())
+          //         );
+          //     }
+          //     return strains.map(strain => {
+          //         return <StrainCard strain={strain} id={strain.id} handleClick={this.handleClick} handleViewStrainProfile={this.props.handleViewStrainProfile}/>;
+          //         });
+          //     };
+
+
+
+
+        render(){
+
+
+            // const filteredUsers = this.state.strains.filter(rapper => rapper.name.includes(this.state.searchByName))
+            //
+            // const Cards = filteredRappers.map(rapper => {
+            //     return <RapCard key={rapper.name} name={rapper.name}
+            //     sadImg={rapper.sadImage}
+            //     happyImg={rapper.happyImage}/>
+            //     })
+
+
+
+
+            return(
+                <Segment>
+                <Segment>
+      <Icon name="at" size="big" position="left"/>
+      <div class="ui input"><input type="text" placeholder="Search" onChange={this.handleSearch} /></div>
+     <Filter handleAdvancedFilter={this.handleAdvancedFilter} handleLocationSubmit={this.handleLocationSubmit}/>
+        </Segment>
+                <Segment>
+                <Card.Group itemsPerRow={4} doubling raised>
+                    {console.log(this.state)}
+                {this.searchedByNameStrains()}
+            </Card.Group>
+        </Segment>
+    </Segment>
+            )
+        }
     }
 
-    render(){
-        return(
-
-            <Card.Content>
-            {console.log("from the activity feed in the strains", this.state)}
-               <Card.Header>Strains</Card.Header>
-              </Card.Content>
-        )
-    }
-}
 
 
 export const BasicFriendsFeed = (props) => {

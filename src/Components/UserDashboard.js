@@ -14,65 +14,54 @@ import {
   Visibility,
   Label,
   Input,
-  Card
+  Card,
+  Dropdown
 } from 'semantic-ui-react'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import {Route, Link, Switch, withRouter} from 'react-router-dom'
 import Avatar from 'react-avatar'
 import {BasicFriendsFeed, FriendsPhotosFeed, FriendsStrainFeed, RecentActivityFeed, AllUsersFeed} from "./ActivityFeeds"
-
+import ExploreContainer from "./ExploreContainer"
+import UserContentDisplay from './UserContentDisplay'
 
 const getWidth = () => {
-  const isSSR = typeof window === 'undefined'
+    const isSSR = typeof window === 'undefined'
 
   return isSSR ? Responsive.onlyTablet.minWidth : window.innerWidth
+
 }
-
-const HomepageHeading = ({ mobile }) => (
-  <Container text>
-    <Header
-      as='h1'
-      content='My Buds'
-      inverted
-      style={{
-        fontSize: mobile ? '2em' : '4em',
-        fontWeight: 'normal',
-        marginBottom: 0,
-        marginTop: mobile ? '1.5em' : '3em',
-      }}
-    />
-    <Header
-      as='h2'
-      content='Do whatever you want when you want to.'
-      inverted
-      style={{
-        fontSize: mobile ? '1.5em' : '1.7em',
-        fontWeight: 'normal',
-        marginTop: mobile ? '0.5em' : '1.5em',
-      }}
-    />
-    <Button primary size='huge' as={Link} to='/signup'>
-      Get Started
-      <Icon name='right arrow' />
-    </Button>
-  </Container>
-)
-
-HomepageHeading.propTypes = {
-  mobile: PropTypes.bool,
-}
-
-
 
 
 
 class UserDashboard extends React.Component{
 
+
+//okay so the dashboard is going to be geared towards dispensaries owners, they might have more than one dispensary
+//and several strains, they should be able to see all of the strains they've brought to the market and
+//be able to attach which strain is at which dispensary
+//the dashboard is a CRM type of deal, click dispensaries and should show users dispensaries, same with strains
+//when they click the menu of either dispensary or strain, then they should have the ability to add a strain or add a dispensary
+//clicking on the menu should bring up dispensary card or strain card, notifications of strain will popup on the card, notifications
+//for the dispensary will be on the card, (options for what type of notifications they receive would be cool)
+//****nice to have**** notifications setting would be able to change what kind of notifications you receive, types of hits
+
+
+
+//if the user dashboard is mobile than the mobile has to be for Patient user's only, dispensary owners need to be on desktop
+
+//mobile users cannot create dispensaries or strains
+
+//desktop ussers cannot create dispensary reviews or strain reviews
+
+
+
 state = {
     activityFeed: <RecentActivityFeed history={this.props.history} user={this.props}/>
-
 }
+
+
+
 
 
 handleActivityFeedClick = (e) => {
@@ -103,64 +92,154 @@ handleActivityFeedClick = (e) => {
 }
 
 componentDidMount = () => {
+// dashboard fetches members gallery, strain reviews, strains, and dispensaries
 
+
+
+fetch('http://localhost:3000/api/v1/dispensaries/' , {
+          method: "GET",
+          headers: {
+            "content-type": "application/json",
+            accepts: "application/json"
+          }
+        })
+        .then(res => {
+            if(!res.ok) {
+                res.text().then(text => alert(text))
+            } else {
+                return res.json().then(dispensaryData => {
+                    this.setState({ dispensary: true, dispensaries: dispensaryData});
+                })
+            }
+        })
 }
 
-render(){
 
+
+
+
+
+handleItemClick = (e, { name }) => this.setState({ activeItem: name })
+
+render(){
     const activityFeedToDisplay = this.state.activityFeed
+    const { activeItem } = this.state
+
+
+//using active item to display what needed to display,
+// the component was saved to the state
 
 return(
     <ResponsiveContainer functions={this.props}>
-    <Grid columns={2} divided>
-    <Grid.Row stretched>
-      <Grid.Column>
-        <Segment>
-            <div class="ui small image">
+<div class="container-fluid">
+  <div class="row content">
+    <div class="col-sm-3 sidenav hidden-xs">
 
-            {this.props.avatar? <img src={this.props.avatar.url} name={this.props.user.username}/> : <Avatar name={this.props.username}/>}
-
-                </div>
-                <h2>{this.props.user.username}</h2>
-                    <Menu vertical>
-            <Menu.Item name='View My Profile'  onClick={e => this.props.history.push('/profile/')}>
-              Profile
-            </Menu.Item>
-            <Menu.Item name='Explore' onClick={e => this.props.history.push('/explore/')}>
-              Explore
-            </Menu.Item>
-            <Menu.Item name='Friend requests' onClick={e => this.props.history.push('/friendrequests/')}>
-              Friend Requests
-            </Menu.Item>
-            <Menu.Item name='Friends' onClick={e => this.props.history.push('/friends/')}>
-              Friends
-            </Menu.Item>
+      <ul class="nav nav-pills nav-stacked">
+          <Menu fluid vertical>
+            <Menu.Item
+              name='Dispensaries'
+              active={activeItem === 'Dispensaries'}
+              onClick={this.handleItemClick}
+            />
+            <Menu.Item
+              name='Strains'
+              active={activeItem === 'Strains'}
+              onClick={this.handleItemClick}
+            />
+            <Menu.Item
+              name='Gallery'
+              active={activeItem === 'Gallery'}
+              onClick={this.handleItemClick}
+            />
+            <Menu.Item
+              name='Buddies'
+              active={activeItem === 'Buddies'}
+              onClick={this.handleItemClick}
+            />
+            <Menu.Item
+              name='Explore'
+             as={Link} to='/Explore'
+              onClick={this.handleItemClick}
+            />
+            <Menu.Item
+              name='My Profile'
+             as={Link} to='/profile'
+              onClick={this.handleItemClick}
+            />
+            <Menu.Item
+              name='Personality Test'
+              onClick={this.props.handleShowPersonality}
+            />
           </Menu>
-        </Segment>
-      </Grid.Column>
-      <Grid.Column>
-          <div fluid className="ui three item menu" onClick={(e) => this.handleActivityFeedClick(e)} >
-            <a className="item" id="feed">
-              <i className="fire large icon" style={{textAlign: 'center'}} id="feed"  />
-            </a>
+      </ul>
+    </div>
 
-            <a className="item" id="photos">
-              <i className="photo large icon" style={{textAlign: 'center'}} id="photo"/>
-            </a>
 
-            <a className="item" id="strains" >
-              <i className="leaf large icon" id="strains" style={{textAlign: 'center'}} centered/>
-            </a>
-
+    <div class="col-sm-9">
+      <div class="card card-body bg-light">
+        <h4>Dashboard</h4>
+            <UserContentDisplay
+                activeItem={this.state.activeItem}
+                user={this.props.user}
+                dispensaries={this.props.dispensaries}
+                gallery={this.props.gallery}
+                strains={this.props.strains}
+                handleAddPhoto={this.props.handleAddPhoto}
+                handleDeletePhoto={this.props.handleDeletePhoto}
+                deleteDispensaryRequest={this.props.deleteDispensaryRequest}
+                deleteStrainRequest={this.props.deleteStrainRequest}
+                />
+      </div>
+      <div class="row">
+        <div class="col-sm-3">
+          <div class="card card-body bg-light">
+            <h4>Buddies</h4>
+            <p>1 Million</p>
           </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="card card-body bg-light">
+            <h4>Strains</h4>
+            <p>100 Million</p>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="card card-body bg-light">
+            <h4>Sessions</h4>
+            <p>10 Million</p>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="card card-body bg-light">
+            <h4>Bounce</h4>
+            <p>30%</p>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-4">
 
-          <Segment>
-              {activityFeedToDisplay}
-          </Segment>
-      </Grid.Column>
+        </div>
+        <div class="col-sm-4">
 
-    </Grid.Row>
-  </Grid>
+        </div>
+        <div class="col-sm-4">
+
+        </div>
+      </div>
+      <div class="row">
+
+        </div>
+        <div class="col-sm-4">
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
 </ResponsiveContainer>
 )
 }
@@ -168,11 +247,7 @@ return(
 
 class DesktopContainer extends Component {
   state = {
-      user:{
-          friendships:[],
-          strain_reviews:[],
-          gallery:[]
-      }
+
   }
 
 
@@ -182,6 +257,7 @@ class DesktopContainer extends Component {
 
 
       let token = localStorage.token
+
 
       if (token) {
       fetch("http://localhost:3000/api/v1/current_user", {
@@ -201,16 +277,13 @@ class DesktopContainer extends Component {
                       })
                   }
               })
+
           } else {
               console.log('wowo')
           }
+
 }
 
-
-  logOutHandler = () => {
-     localStorage.removeItem("token")
-      this.props.history.push('/Home')
-  }
 
 
   hideFixedMenu = () => this.setState({ fixed: false })
@@ -240,6 +313,7 @@ class DesktopContainer extends Component {
               vertical
               visible={visible}
               >
+              {console.log("DASHBOARD STATE SHOULD HAVE SOME", this.state)}
               <Menu.Item as='a' onClick={(e) => this.props.props.handleNewStrainReviewClick()}>
                   New StrainReview
               </Menu.Item>
@@ -278,7 +352,7 @@ class DesktopContainer extends Component {
                 <Menu.Item position='right'>
                     {this.state.user?  <Button
                          as={Link} to='/home'
-                         inverted={!fixed} onClick={() => this.logOutHandler()}> Log Out </Button> : null}
+                         inverted={!fixed} onClick={() => this.props.logOutHandler}> Log Out </Button> : null}
                   <Button as='a' inverted={!fixed} primary={fixed} style={{ marginLeft: '0.5em' }}>
                     Settings
                   </Button>
@@ -288,15 +362,8 @@ class DesktopContainer extends Component {
           </Segment>
         </Visibility>
         {children}
-        <Segment
-            textAlign='center'
-            raised
-            circular inverted style={ {width:100, height:100} }
-            >
-                <Menu.Item as='a' onClick={(e) => this.handlePlusClick()} onDoubleClick={(e) => this.handleDoublePlusClick()}>
-                    <Icon name='plus square' size='big'/>
-                </Menu.Item>
-        </Segment>
+
+
       </Responsive>
     )
   }
@@ -308,6 +375,7 @@ DesktopContainer.propTypes = {
 }
 
 
+
 class MobileContainer extends Component {
   state = {user:{
       friendships:[],
@@ -315,6 +383,36 @@ class MobileContainer extends Component {
       gallery:[]
   }}
 
+componentDidMount(){
+
+
+  let token = localStorage.token
+
+
+  if (token) {
+  fetch("http://localhost:3000/api/v1/current_user", {
+            method: "GET",
+            headers: {
+                Authorization: `${token}`,
+              "content-type": "application/json",
+              accepts: "application/json"
+            }
+          })
+          .then(res => {
+              if(!res.ok) {
+                  res.text().then(text => alert(text))
+              } else {
+                  return res.json().then(userData => {
+                      this.setState({ user: { ...userData.user }, token: userData.jwt, avatar: userData.user.avatar });
+                  })
+              }
+          })
+
+      } else {
+          console.log('wowo')
+      }
+
+  }
 
   handleActivityFeedClick = (e) => {
 
@@ -363,49 +461,24 @@ class MobileContainer extends Component {
 
 
 
-
     return (
 
       <Responsive
-        as={Sidebar.Pushable}
         getWidth={getWidth}
         maxWidth={Responsive.onlyMobile.maxWidth}
       >
 
-<Sidebar
-  as={Menu}
-  className='popupmenu'
-  animation='push'
-  inverted
-  direction='top'
-  onHide={this.handleSidebarHide}
-  vertical
-  visible={visible}
->
-<Menu.Item as='a' onClick={(e) => this.props.props.handleNewStrainReviewClick()}>
-    New StrainReview
-</Menu.Item>
-<Menu.Item as='a' onClick={(e) => this.props.props.handleNewPostClick()}>
-    New Post
-</Menu.Item>
-<Menu.Item as='a' onClick={(e) => this.props.props.handleNewPhotoClick()}>
-    New Photo
-</Menu.Item>
-</Sidebar>
+      {console.log(this.state.user)}
 
-
-        <Sidebar.Pusher dimmed={sidebarOpened}>
           <Segment
             inverted
             textAlign='center'
             style={{ minHeight: 50, padding: '1em 0em' }}
             vertical
           >
-
+          This is a segment that I could put anything on
           </Segment>
-          <Grid columns={1} >
-          <Grid.Row centered>
-            <Grid.Column>
+
                 <div className="ui three item menu" onClick={(e) => this.handleActivityFeedClick(e)}>
                   <a className="item" id="feed">
                     <i className="fire large icon" id="feed"/>
@@ -417,16 +490,30 @@ class MobileContainer extends Component {
                     <i className="leaf large icon" id="strains"/>
                   </a>
                 </div>
-              <Segment>1</Segment>
-              <Segment>2</Segment>
-                  <Segment>1</Segment>
-                  <Segment>2</Segment>
-                  <Segment>1</Segment>
 
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-        </Sidebar.Pusher>
+                <Segment>
+                    <UserContentDisplay
+                        activeItem={this.state.activeItem}
+                        user={this.state.user}
+                        dispensaries={this.state.user.dispensaries}
+                        strains={this.state.user.strains}
+                        deleteDispensaryRequest={this.state.deleteDispensaryRequest}
+                        deleteStrainRequest={this.state.deleteStrainRequest}
+                        />
+                </Segment>
+
+
+        <Menu fixed='bottom' inverted>
+          <Container>
+            <Menu.Item as='a' header>
+              My Buds
+            </Menu.Item>
+            <Menu.Item position='right'>
+
+            </Menu.Item>
+            <Menu.Item as={Link} to="/home">Home</Menu.Item>
+          </Container>
+        </Menu>
       </Responsive>
 
     )

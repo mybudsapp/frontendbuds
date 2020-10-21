@@ -33,6 +33,7 @@ const getWidth = () => {
 class ExploreContainer extends React.Component{
 
 state = {
+    user : {},
     Feed: <RecentActivityFeed history={this.props.history} user={this.props}/>
 
 }
@@ -55,7 +56,7 @@ handleItemClick = (e, { name }) => {
     }else if (name === "strains") {
 
         this.setState({
-            Feed: <AllStrainsFeed user={this.props} history={this.props.history} handleViewUserProfile={this.props.handleViewUserProfile}/>
+            Feed: <AllStrainsFeed user={this.props.user} history={this.props.history} handleViewStrainProfile={this.props.handleViewStrainProfile}/>
         })
 
         console.log("whoa strains")
@@ -72,7 +73,27 @@ handleItemClick = (e, { name }) => {
 
 componentDidMount = () => {
 
+    let token = localStorage.token;
+
+    fetch("http://localhost:3000/api/v1/current_user", {
+      method: "GET",
+      headers: {
+        Authorization: `${token}`,
+        "content-type": "application/json",
+        accepts: "application/json"
+      }
+    })
+      .then(resp => resp.json())
+      .then(userData => {
+        this.setState({
+          user: { ...userData.user },
+          avatar: userData.user.avatar
+        });
+      })
 }
+
+
+
 
 render(){
 
@@ -80,7 +101,27 @@ render(){
     const { sidebarOpened } = this.state
     const { visible } = this.state
     const { activeItem } = this.state
+    console.log("from the explore container", this.props)
 
+
+
+    const arrayOfFriends = this.props.user
+
+
+    //I need to create a new map of objects so
+
+    // i need to get to check if they are already currently friends by collecting friendships
+    // and cross refference from that array by checking if the user ids match currently in their friendships array
+    // obect index [key]
+
+//     function areFriends(arrayOfFriends) {
+//         console.log("FUNktion", arrayOfFriends)
+//   for (let i of arrayOfFriends) {
+//     if (i.id == this.props.user.id ) return true;
+//   }
+// }
+
+    //find out if the person is a the user's friend or not, if a not a friend, display friend request button
 return(
     <ResponsiveContainer functions={this.props}>
 
@@ -91,6 +132,9 @@ return(
             {this.props.avatar? <img src={this.props.avatar.url} name={this.props.user.username}/> : <Avatar name={this.props.username}/>}
                 </div>
                 <h2>{this.props.user.username}</h2>
+                </div>
+                <div>
+                    {console.log("ASDASD", arrayOfFriends)}
                 </div>
                 <Menu fluid widths={4}>
                 <Menu.Item
@@ -106,6 +150,13 @@ return(
                  onClick={this.handleItemClick}
                 >
                  Strains
+                </Menu.Item>
+                <Menu.Item
+                 name='photos'
+                 active={activeItem === 'photos'}
+                 onClick={this.handleItemClick}
+                >
+                 Dispensaries
                 </Menu.Item>
                 <Menu.Item
                  name='photos'
@@ -242,7 +293,7 @@ class DesktopContainer extends React.Component {
                 <Menu.Item position='right'>
                     {this.state.user?  <Button
                          as={Link} to='/home'
-                         inverted={!fixed} onClick={() => this.logOutHandler()}> Log Out </Button> : null}
+                         inverted={!fixed} onClick={() => this.props.logOutHandler}> Log Out </Button> : null}
                   <Button as='a' inverted={!fixed} primary={fixed} style={{ marginLeft: '0.5em' }}>
                     Settings
                   </Button>
@@ -332,66 +383,46 @@ class MobileContainer extends Component {
     return (
 
       <Responsive
-        as={Sidebar.Pushable}
         getWidth={getWidth}
         maxWidth={Responsive.onlyMobile.maxWidth}
       >
+      <Segment
+        inverted
+        textAlign='center'
+        style={{ minHeight: 50, padding: '1em 0em' }}
+        vertical
+      >
+sasd
+      </Segment>
 
-<Sidebar
-  as={Menu}
-  className='popupmenu'
-  animation='push'
-  inverted
-  direction='top'
-  onHide={this.handleSidebarHide}
-  vertical
-  visible={visible}
->
-<Menu.Item as='a' onClick={(e) => this.props.props.handleNewStrainReviewClick()}>
-    New StrainReview
-</Menu.Item>
-<Menu.Item as='a' onClick={(e) => this.props.props.handleNewPostClick()}>
-    New Post
-</Menu.Item>
-<Menu.Item as='a' onClick={(e) => this.props.props.handleNewPhotoClick()}>
-    New Photo
-</Menu.Item>
-</Sidebar>
+            <div className="ui three item menu" onClick={(e) => this.handleActivityFeedClick(e)}>
+              <a className="item" id="feed">
+                <i className="fire large icon" id="feed"/>
+              </a>
+              <a className="item" id="photos">
+                <i className="photo large icon" id="photo"/>
+              </a>
+              <a className="item" id="strains">
+                <i className="leaf large icon" id="strains"/>
+              </a>
+            </div>
+
+            <Segment>
+
+            </Segment>
 
 
-        <Sidebar.Pusher dimmed={sidebarOpened}>
-          <Segment
-            inverted
-            textAlign='center'
-            style={{ minHeight: 50, padding: '1em 0em' }}
-            vertical
-          >
+    <Menu fixed='bottom' inverted>
+      <Container>
+        <Menu.Item as='a' header>
+          My Buds
+        </Menu.Item>
+        <Menu.Item position='right'>
 
-          </Segment>
-          <Grid columns={1} >
-          <Grid.Row centered>
-            <Grid.Column>
-                <div className="ui three item menu" onClick={(e) => this.handleActivityFeedClick(e)}>
-                  <a className="item" id="feed">
-                    <i className="fire large icon" id="feed"/>
-                  </a>
-                  <a className="item" id="photos">
-                    <i className="photo large icon" id="photo"/>
-                  </a>
-                  <a className="item" id="strains">
-                    <i className="leaf large icon" id="strains"/>
-                  </a>
-                </div>
-              <Segment>1</Segment>
-              <Segment>2</Segment>
-                  <Segment>1</Segment>
-                  <Segment>2</Segment>
-                  <Segment>1</Segment>
-
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-        </Sidebar.Pusher>
+        </Menu.Item>
+        <Menu.Item as={Link} to="/home">Home</Menu.Item>
+      </Container>
+    </Menu>
       </Responsive>
 
     )

@@ -54,7 +54,7 @@ render() {
 
     return(
         <div class="ui form" encType="multipart/form-data">
-             <form onSubmit={this.theSubmitPhotoHandler}>
+             <form onSubmit={this.theSubmitPhotoHandler} >
              <label>Photo</label>
                <input
                  encType="multipart/form-data"

@@ -9,13 +9,23 @@ import {
   List,
   Menu,
   Segment,
+  Button
 } from 'semantic-ui-react'
 import { Link, Route, Switch, withRouter } from "react-router-dom";
 import Signup from "../Components/Signup";
 import Login from "../Components/Login";
 import Home from "../Components/Home";
 import StrainForm from '../Components/StrainForm'
-import UserStrainContainer from "../Components/UserStrainContainer"
+import UserContentDisplay from '../Components/UserContentDisplay'
+import Search from '../Components/Search'
+import NewDispensaryForm from '../Components/NewDispensaryForm'
+import EditDispensaryForm from '../Components/EditDispensaryForm'
+import NewStrainForm from '../Components/StrainForm'
+import EditStrainForm from '../Components/EditStrainForm'
+import Profile from '../Components/Profile.js'
+import StrainProfile from '../Components/StrainProfile.js'
+import StrainReview from '../Components/StrainReview.js'
+
 import Error from "../Components/Error";
 
 
@@ -24,13 +34,23 @@ import Error from "../Components/Error";
 
 
 const GuestContainerLayout = (props) => {
+
+     console.log(props)
+
 return (
 
   <div>
     <Menu fixed='top' inverted>
       <Container>
+            <Link to="/dashboard">
         <Menu.Item as='a' header>
           My Buds
+        </Menu.Item>
+    </Link>
+        <Menu.Item position='right'>
+            {props.user?  <Button
+                 as={Link} to='/home'
+                 >Log Out</Button> : null}
         </Menu.Item>
         <Menu.Item as={Link} to="/home">Home</Menu.Item>
         <Dropdown item simple text='Dropdown'>
@@ -55,7 +75,28 @@ return (
 
     <Container text style={{ marginTop: '7em' }}>
     <Switch>
-
+        <Route
+            path="/strains/:strain_name/strainreview/:id"
+            render={() => <StrainReview submitNewStrainReviewHandler={props.submitNewStrainReviewHandler} />}
+            />
+        <Route path="/strains/:strain_name/:id"
+            render={() => <StrainProfile user={props.user, console.log("GUEST CONTAINER", props)}  strains={props.strains} />} />
+        <Route
+            path="/:username/newstrain"
+            render={() => <NewStrainForm submitHandler={props.submitHandler} user={props.user} />}
+            />
+            <Route
+                path="/:username/editstrain/:id"
+                render={() => <EditStrainForm editStrainHandler={props.editStrainHandler} user={props.user} />}
+                />
+        <Route
+            path="/:username/newdispensary"
+            render={() => <NewDispensaryForm submitHandler={props.submitHandler} user={props.user} />}
+            />
+            <Route
+                path="/:namespace/editdispensary/:id"
+                render={() => <EditDispensaryForm editDispensaryHandler={props.editDispensaryHandler} user={props.user} dispensary={props.dispensary} />}
+                />
         <Route
             path="/signup"
             render={() => <Signup submitHandler={props.submitHandler} />}
@@ -64,10 +105,11 @@ return (
             path="/login"
             render={() => <Login loginHandler={props.loginHandler} />}
             />
-        <Route path="/strains/new" render={renderProps => {
+        <Route path="/strains" render={renderProps => {
           return (
             <div>
-            <StrainForm/>
+            <Search></Search>
+            <UserContentDisplay strains={props.strains} user={props.user} deleteDispensaryRequest={props.deleteDispensaryRequest}/>
             </div>
           )
         }} />

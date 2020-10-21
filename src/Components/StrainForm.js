@@ -1,35 +1,63 @@
 
 import React, {Component} from 'react'
-import {Card,Form, Label, Button} from 'semantic-ui-react'
+import {Card,Form, Label, Button, Segment} from 'semantic-ui-react'
 import PropTypes from 'prop-types'
 
-class StrainForm extends Component {
+const initialState = {
+    name: "",
+    location: ""
+
+}
+
+class NewStrainForm extends Component {
 
 state = {
-    newStrain:{
-        Name: '',
-        Mental:  '000',
-        Physical: '000',
-        Velocity: '000',
-        Flavor: '000',
-        Overall: '000'
-    },
-    oldStrain: {}
+
 }
+
+// validate = () => {
+//     let nameError = "";
+//     let emailError = "";
+//     // let passwordError = "";
+//
+//     if (!this.state.name) {
+//       nameError = "name cannot be blank";
+//     }
+//
+//     if (!this.state.email.includes("@")) {
+//       emailError = "invalid email";
+//     }
+//
+//     if (emailError || nameError) {
+//       this.setState({ emailError, nameError });
+//       return false;
+//     }
+//
+//     return true;
+//   };
+
 
 
 changeHandler = (e) => {
+
     e.preventDefault()
-    console.log(this.state)
-    e.target.files?
-    this.setState({strain:{
-        image: e.target.files[0]
-    }
-},  () => {
-console.log('from true statement and saving file from change handler',this.state)})
-     : this.setState({ strain: {
+
+    // const isValid = this.validate();
+    //
+    //     if (isValid) {
+    //       console.log(this.state);
+    //       // clear form
+    //       this.setState(initialState);
+    //     }
+
+
+
+
+        this.setState({ strain: {
     ...this.state.strain,
-    [e.target.placeholder]: e.target.value
+    user_id: e.target.parentElement.parentElement.getAttribute("user"),
+    [e.target.name]: e.target.value
+
 }}, () => {
 console.log('from else if',this.state)
 })
@@ -48,74 +76,110 @@ console.log('from handle avatar',this.state)})
 
 theSubmitHandler = (e) => {
 
+
     e.preventDefault()
 
     let token = localStorage.getItem('token')
-    let strain_id = this.props.strain.id
+
 
 
     console.log("the state once submit handler is hit", this.state)
-    this.props.submitHandler(this.state, token, strain_id);
-    this.setState({
-        newStrain :{
-            Mental:  '000',
-            Physical: '000',
-            Velocity: '000',
-            Flavor: '000',
-            Overall: '000'
-        }
-    });
+    this.props.submitHandler(this.state, token);
+
+    // gotta make the set the new state for new dispensarh
+    // this.setState({
+    //     newStrain :{
+    //         Mental:  '000',
+    //         Physical: '000',
+    //         Velocity: '000',
+    //         Flavor: '000',
+    //         Overall: '000'
+    //     }
+    // })
+    ;
 };
 
 
-handleChange = (e) => {
-this.setState({
-    personaility_type: e.target.value
-})
-}
 
 
 
 render() {
 
+    const dispensariesOptions = () => {
+
+        let dispensaries = []
+
+        if(this.props.user.dispensaries){
+            dispensaries = this.props.user.dispensaries
+        }else{
+            return <h1> No Dispensary </h1>
+        }
+        return dispensaries.map(dispensary => {
+            return <option value={dispensary.id} >{dispensary.namespace}</option>;
+            })
+        }
+
+
+
     return(
 
-        <div class="ui form" encType="multipart/form-data">
-             <form onSubmit={this.theSubmitHandler}>
-             <label>name:</label>
+        <Segment raised>
+                <input
+                  type="file"
+                  placeholder="avatar"
+                  value={this.state.email}
+                  onChange={this.changeHandler}
+                />
+
+            <img id="strainavatar" src="https://cdn.dribbble.com/users/2313464/screenshots/6379726/weed_3000_-_2000_2x.jpg"></img>
+
+            <div class="ui form" encType="multipart/form-data" user={this.props.user.id}  >
+            <h3>New Strain </h3>
+             <form onSubmit={e => this.theSubmitHandler(e)} >
+
+             <label>Name:</label>
                <input
                  type="text"
-                 placeholder="name"
-                 value={this.state.strainname}
+                 name="strain_name"
+                 value={this.state.state}
                  onChange={this.changeHandler}
                />
-           <label>Mental:</label>
-               <input
-                 type="password"
-                 placeholder="password"
-                 value={this.state.password}
-                 onChange={this.changeHandler}
-               />
-           <label>Physical:</label>
-               <input
-                 type="date"
-                 placeholder="dob"
-                 onChange={this.changeHandler}
-               />
-           <label>Email:</label>
-               <input
-                 type="text"
-                 placeholder="email"
-                 value={this.state.email}
-                 onChange={this.changeHandler}
-               />
-                   <button>Sign Up</button>
+           <br></br>
+           <label> Location: </label>
+            <select name="dispensary"  onChange={this.changeHandler}>
+                <option value="error">Choose Which Location</option>
+                {dispensariesOptions()}
+             </select>
+           <br></br>
+           <label>Type:</label>
+               <select name="type" id="type" onChange={this.changeHandler}>
+                   <option value="error">Choose the Type</option>
+       <option value="Sativa">Sativa</option>
+       <option value="Indica" >Indica </option>
+       <option value="Hybrid">Hybrid</option>
+   </select>
+   <br></br>
+   <label>Description:</label>
+       <input
+         type="text"
+         name="description"
+         value={this.state.state}
+         onChange={this.changeHandler}
+       />
+                   <button>Submit</button>
              </form>
 
          </div>
+         </Segment>
 
     )
 }
+
+
+
+
+
+
 }
 
-export default StrainForm
+export default NewStrainForm

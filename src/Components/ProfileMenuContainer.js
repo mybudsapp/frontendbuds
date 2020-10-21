@@ -1,46 +1,76 @@
 import React from "react";
 import {Gallery, Friends, Strains} from '../Components/ProfilePages.js'
 import {Segment, Container, Card, Image} from 'semantic-ui-react'
-import ProfileMenuDisplay from '../Components/ProfileMenuDisplay'
 
 
-export default class ProfileMenuContainer extends React.Component {
 
-  state = {
-      user: {
-          friendships:[],
-          strain_reviews:[],
-          gallery:[]
-      },
-    pages: <Gallery />
-  };
+const ProfileMenuContainer = (props) => {
 
-  componentDidMount = (props) => {
-      this.setState({
-          user: this.props.user
-      })
-  }
-
-  handleClick = (e) => {
-console.log(e.target.id)
-    if(e.target.id === "gallery"){
-        this.setState({
-            pages: <Gallery/>
-        })
-    }else if (e.target.id === "friends"){
-        this.setState({
-            pages: <Friends/>
-        })
-    }else if(e.target.id === "strains"){
-        this.setState({
-            pages: <Strains/>
-        })
-    }
-    }
+//   state = {
+//       user: {
+//           friendships:[],
+//           strain_reviews:[],
+//           gallery:[]
+//       },
+//       display: {},
+//     pages: <Gallery />
+//   };
+//
+//   componentDidMount = (props) => {
+//       this.setState({
+//           user: this.props.user,
+//           display: this.props.display
+//       }) ;
+//
+//
+//   }
+//
+//   handleClick = (display) => {
+// console.log("!@#!@#!@#444")
 
 
-  render() {
+    // if(e.target.id === "gallery"){
+    //     this.setState({
+    //         pages: <Gallery user={this.state.user}/>
+    //     })
+    // }else if (e.target.id === "friends"){
+    //     this.setState({
+    //         pages: <Friends friends={this.state.user.friends}/>
+    //     })
+    // }else if(e.target.id === "strains"){
+    //     this.setState({
+    //         pages: <Strains/>
+    //     })
+    // }
 
+
+
+// return <div>{this.state.pages}</div>
+//
+// }
+
+
+
+
+
+//     let detailsToDisplay = (display) => {
+//
+//           debugger
+//
+//           if (display === "Photos"){
+//               this.setState({
+//                   pages: <Gallery user={this.state.user}/>
+//           })
+//       }else if (display === "friends"){
+//           this.setState({
+//               pages: <Friends friends={this.state.user.friends}/>
+//       })
+//   }else if(display === "strains"){
+//       this.setState({
+//           pages: <Strains/>
+//   })
+// }
+// }
 // {
 //   if(this.state.pages === 'friends'){
 //        this.props.user.friendships.map((friend) => {
@@ -95,27 +125,20 @@ console.log(e.target.id)
 //     }
 // </div> : null}
 
-    const detailsToDisplay = <div>{this.state.pages}</div>
-        console.log('within profile menu container', this.props, this.state)
+
+
+
+
+
+
+
 
     return(
         <Container>
-        <div className="ui four item menu" onClick={(e) => this.handleClick(e)}>
-              <a className="item active" id="gallery">
-                <i className="photo large icon" id="gallery"/>
-              </a>
-
-              <a className="item" id="friends">
-                <i className="user large icon" id="friend"/>
-              </a>
-
-              <a className="item" id="strains">
-                <i className="leaf large icon" id="strain"/>
-              </a>
-              </div>
-        <ProfileMenuDisplay display={detailsToDisplay}/>
+        {props.display}
         </Container>
     )
 
 }
-}
+
+export default ProfileMenuContainer
